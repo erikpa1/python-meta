@@ -11,6 +11,10 @@ LogW << "Test - warning log"
 LogI << "Test - info log"
 
 
-
+# def StackLog():
+#     LogE("Test - error log", stackHeight=1)
+#
+# StackLog()
+#
 
 

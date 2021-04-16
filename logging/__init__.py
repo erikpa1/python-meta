@@ -10,7 +10,7 @@ console_warning = '\u001b[35m'
 
 def __print_format_stack(stackHeight=1, *args, **kwargs):
     caller = getframeinfo(stack()[stackHeight][0])
-    print(str(caller.filename) + ", line " + str(caller.lineno) + ": ", *args, **kwargs)
+    print("File \"" + str(caller.filename) + "\", line " + str(caller.lineno) + ": ", *args, **kwargs)
 
 
 def __print_err(stackHeight, *args, **kwargs):
@@ -41,16 +41,13 @@ class Logger():
         self._function = function
 
     def __lshift__(self, *args, **kwargs):
-        self._function(3, *args, **kwargs)
+        self._function(kwargs.pop("stackHeight", 0) + 3, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        self._function(3, *args, **kwargs)
-
-
-
-
-
-
+        """
+        :param stackHeight: height of stack
+        """
+        self._function(kwargs.pop("stackHeight", 0) + 3, *args, **kwargs)
 
 LogE = Logger(__print_err)
 LogW = Logger(__print_warn)
