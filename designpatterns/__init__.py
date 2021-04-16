@@ -5,7 +5,7 @@ import weakref
 
 
 
-class Null():
+class _Null():
     """ Null objects always and reliably "do nothing." """
 
     def __init__(self, *args, **kwargs): pass
@@ -13,6 +13,12 @@ class Null():
     def __repr__(self): return "Null()"
     def __nonzero__(self): return 0
     def __bool__ (self): return False
+    def __str__(self): return ""
+    def __int__(self): return 0
+    def __float__(self): return 0
+    def __bool__(self): return False
+
+    def __getattr__(self, name): return self
 
     def __getattr__(self, name): return self
     def __setattr__(self, name, value): return self
@@ -23,6 +29,7 @@ class Null():
             return True
         return False
 
+Null = _Null()
 
 class Functor():
     """
@@ -36,31 +43,12 @@ class Functor():
         self.__name__ = variableName
 
     def __call__(self, *args, **kwargs):
-        LogError_FunctionAndLine("Unimplemented functionality")
-
-class AutoIncrementer():
-    def __init__(self, startValue = 0, incrementStep: int = 1):
-        self._value = startValue
-        self._incrementStep = incrementStep
-
-    def __call__(self):
-        tmp = self._value
-        self._value += self._incrementStep
-        return tmp
-
-class AutoDecrementer():
-    def __init__(self, startValue = 0, incrementStep: int = 1):
-        self._value = startValue
-        self._incrementStep = incrementStep
-
-    def __call__(self):
-        tmp = self._value
-        self._value -= self._incrementStep
-        return tmp
+        LogE << "Unimplemented functionality"
 
 
 
 class Command():
+
     def Do(self):
         pass
 
@@ -68,7 +56,7 @@ class Command():
         pass
 
 
-class CommandHistory():
+class CommandsHistory():
     def __init__(self):
         self._commands = []
         self._actualCommand = -1
@@ -97,6 +85,8 @@ class MultiObjectHandler():
         for i in self._objects:
             values.append(getattr(i, item, None))
         return values
+
+
 
     def __setattr__(self, key, value):
         for i in self._objects:
