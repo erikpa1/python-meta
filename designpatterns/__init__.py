@@ -1,4 +1,9 @@
+
+from logging import *
+
 import weakref
+
+
 
 class Null():
     """ Null objects always and reliably "do nothing." """
@@ -83,4 +88,21 @@ class CommandHistory():
     def GoForward(self):
         pass
 
+class MultiObjectHandler():
+    def __init__(self):
+        self._objects = []
+
+    def __getattr__(self, item):
+        values = []
+        for i in self._objects:
+            values.append(getattr(i, item, None))
+        return values
+
+    def __setattr__(self, key, value):
+        for i in self._objects:
+            setattr(i, key, value)
+
+    def __call__(self, *args, **kwargs):
+        for i in self._objects:
+            i(i, *args, **kwargs)
 
