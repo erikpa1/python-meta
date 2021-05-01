@@ -29,3 +29,24 @@ class propFloat(PropertyParent):
         self._value: float = value
         self.minValue = None
         self.maxValue = None
+
+
+class DataTableRow():
+
+    def __init__(self, key, language, data = []):
+        self._key = ""
+        self._language = ""
+        self._data = []
+
+class DataTable():
+
+    def __init__(self):
+        self._rows  = {}
+
+    def CreateRow(self, key, language, data = []):
+        data = DataTableRow(key, language, data)
+        self._rows[key] = data
+        return data
+
+    def AddRow(self, row: DataTableRow):
+        self._rows[row._key] = row

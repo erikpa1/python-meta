@@ -1,9 +1,11 @@
-from meta.codebuilders.mxml import *
-from meta.guiarchitecture import *
+import xml.etree.ElementTree as et
+
+from meta.logging import *
+from meta import gui_arch
 
 
-class bsNavItem(NavItem):
-    def __init__(self, text = ""):
+class NavItem(gui_arch.NavItem):
+    def __init__(self, text=""):
         super().__init__()
         self._text = text
         self._class = "nav-item"
@@ -13,168 +15,214 @@ class bsNavItem(NavItem):
         self._attributes = {}
         self._attributes["class"] = "nav-item"
 
-
-    def __str__(self):
-        builder = XmlBuilder()
-
+    def FillTree(self, tree: et.Element):
         dict = {
-            "class" : "nav-link",
-            "href" : self._href
+            "class": "nav-link",
+            "href": self._href
         }
 
-        builder.pair_tag("li", XmlBuilder().pair_tag_nnl("a", self._text, **dict), **self._attributes)
+        if self._isActive:
+            self._attributes["class"] = "nav-item active"
 
-        return builder.result
+        liElement = et.SubElement(tree, "li", self._attributes)
 
-    def _addition(self):
-        return ""
+        aElement = et.SubElement(liElement, "a", dict)
+        aElement.text = self._text
 
-class bsNavDropDownItem(bsNavItem):
 
-    def __init__(self, text = "", items = []):
+class NavDropDownItem(NavItem):
+
+    def __init__(self, text="", items=[]):
         super().__init__(text)
         self._attributes["class"] = "nav-item dropdown"
         self._items = items
 
-    def __str__(self):
-        builder = XmlBuilder()
-
-
-        items = XmlBuilder()
-
-        for i in self._items:
-            items.pair_tag_nnl("a", i, **{"class": "dropdown-item", "href":"#"}).new_line()
-
-
-        divBuilder = XmlBuilder()
-        divBuilder.pair_tag("div", items, **{"class": "dropdown-menu"})
+    def FillTree(self, tree: et.Element):
+        liElement = et.SubElement(tree, "li", self._attributes)
 
         aDict = {
-            "class" : "nav-link dropdown-toggle",
-            "href" : self._href,
+            "class": "nav-link dropdown-toggle",
+            "href": self._href,
             "id": "navbardrop",
-            "data-toggle" : "dropdown"
+            "data-toggle": "dropdown"
         }
 
-        aBuilder = XmlBuilder()
-        aBuilder.pair_tag_nnl("a", self._text, **aDict)
+        activeElement = et.SubElement(liElement, "a", aDict)
+        activeElement.text = self._text
+        divElement = et.SubElement(liElement, "div", {"class": "dropdown-menu"})
+
+        for i in self._items:
+            aElement = et.SubElement(divElement, "a", {"class": "dropdown-item", "href": "#"})
 
 
-        children = XmlBuilder()
-        children.text(aBuilder).new_line()
-        children.text(divBuilder).new_line()
+class Brand(gui_arch.Element):
+    def __init__(self, text):
+        super().__init__()
+        self._text = text
+        self._attributes = {}
+        self._attributes["class"] = "navbar-brand"
+        self._attributes["href"] = "#"
+
+    def FillTree(self, tree: et.Element):
+        a = et.SubElement(tree, "a", self._attributes)
+        a.text = self._text
 
 
-        builder.pair_tag("li", children, **self._attributes )
-
-
-        return builder.result
-
-
-
-class bsBrand(Element):
-    def __init__(self):
-        self._text = ""
-        self._logo = ""
-        self._href = "#"
-
-    def __str__(self):
-        return XmlBuilder().pair_tag("a", self._text, **{"href" : self._href})
-
-
-class bsNavBar(NavBar):
+class NavBar(gui_arch.NavBar):
 
     def __init__(self):
         super().__init__()
-        self.skin = "light"
-        self.skin = "dark"
+        # self.skin = "light"
+        self.navbar_skin = "dark"
+        self.bg_skin = "dark"
         self.brand = None
 
-    def AddBrand(self, brand: bsBrand):
+    def SetSkin(self, skinName: str):
+        self.bg_skin = skinName
+        self.navbar_skin = skinName
+
+    def AddBrand(self, brand: Brand):
         self.brand = brand
 
-    def __str__(self):
-        builder = XmlBuilder()
+    def FillTree(self, tree: et.Element):
+        if self.type == gui_arch.NavBarTypes.STANDARD:
+            self._FillStandardType(tree)
+        elif self.type == gui_arch.NavBarTypes.COLLAPSE:
+            LogE << "Unimplemented" + "https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_navbar_collapse"
+        else:
+            LogE << "Totally unimplemented"
 
+    def _FillStandardType(self, tree: et.Element):
+        nav = et.SubElement(tree, "nav",
+                            {"class": "navbar navbar-expand-sm bg-" + self.bg_skin + " navbar-" + self.navbar_skin})
 
-
-        items = ""
-
+        ul = et.SubElement(nav, "ul", {"class": "navbar-nav"})
         i: NavItem
         for i in self._navItems:
-            items += "\n" + str(i) + "\n"
-
-        ul = XmlBuilder()
-        ul.pair_tag("ul", items, _class = "navbar-nav")
-
-        builder.pair_tag("nav", ul, _class = "navbar navbar-expand-sm bg-" + self.skin + " navbar-" + self.skin)
+            i.FillTree(ul)
 
 
-        return str(builder)
-
-
-
-class bsElement(Element):
+class Element(gui_arch.Element):
     def __init__(self):
         self._tag = "div"
 
 
-
-class bsHeader3(bsElement):
+class Header1(gui_arch.Element):
 
     def __init__(self, text):
-        super(bsHeader3, self).__init__()
+        super().__init__()
+        self._tag = "h1"
+        self._text = text
+
+    def FillTree(self, tree: et.Element):
+        et.SubElement(tree, self._tag).text = self._text
+
+class Header2(gui_arch.Element):
+
+    def __init__(self, text):
+        super().__init__()
+        self._tag = "h2"
+        self._text = text
+
+    def FillTree(self, tree: et.Element):
+        et.SubElement(tree, self._tag).text = self._text
+
+class Header3(gui_arch.Element):
+
+    def __init__(self, text):
+        super().__init__()
         self._tag = "h3"
         self._text = text
 
-    def __str__(self):
-        return str(XmlBuilder().pair_tag_nnl(self._tag, self._text).new_line())
+    def FillTree(self, tree: et.Element):
+        et.SubElement(tree, self._tag).text = self._text
 
-
-class bsParagraph(bsElement):
+class Paragraph(gui_arch.Element):
 
     def __init__(self, text):
-        super(bsParagraph, self).__init__()
+        super().__init__()
         self._tag = "p"
         self._text = text
 
-    def __str__(self):
-        return str(XmlBuilder().pair_tag_nnl(self._tag, self._text).new_line())
+    def FillTree(self, tree: et.Element):
+        et.SubElement(tree, self._tag).text = self._text
 
-class bsBreak(bsElement):
 
-    def __str__(self):
-        return "<br>\n"
 
-class bsContainer(Container):
+class Container(gui_arch.Container):
     def __init__(self):
         super().__init__()
+        self._attributes = {}
+        self._attributes["class"] = "container"
+        self.fluidEnabled = False
+        self.borderEnabled = False
+        self.topPadding = 0
+        self.fontSkin = None
 
-    def __str__(self):
-        builder = XmlBuilder()
 
-        body = ""
+    def FillTree(self, tree: et.Element):
+        self._Bake()
+        div = et.SubElement(tree, "div", self._attributes)
+
+        i: Element
         for i in self._items:
-            body += str(i) + "\n"
+            i.FillTree(div)
 
-        builder.pair_tag("div", body, **{"class" : "container"})
+    def _Bake(self):
+        base = "container"
 
-        return str(builder)
+        if self.fluidEnabled:
+            base += "-fluid"
 
+        if self.borderEnabled:
+            base += " border"
 
+        if self.skin:
+            base += " bg-" + self.skin
 
+        if self.fontSkin:
+            base += " text-" + self.fontSkin
 
+        base += " pt-" + str(self.topPadding)
 
+        self._attributes["class"] = base
 
+class TableView(Container):
 
+    def __init__(self):
+        super().__init__()
+        self._attr = {}
+        self._attr["class"] = "table table-striped"
+        self.hoverEnabled = False
+        self.isBorderLess = False
 
+        #TODO farby jednotlivych columnov https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_table_contextual&stacked=h
+        #TODO skin headru https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_table_head&stacked=h
+        #TODO small table https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_table_sm&stacked=h
+        #TODO responsible https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_table_responsive
 
+    def FillTree(self, tree: et.Element):
 
+        div = et.SubElement(tree, "table", self._attributes)
 
+        thead = et.SubElement(div, "thead", {})
+        tr = et.SubElement(thead, "tr", {})
 
+        items = ["Name", "Surname", "Age"]
 
+        for i in items:
+            et.SubElement(tr, "th", {}).text = i
 
+        tbody = et.SubElement(div, "tbody", {})
 
+        items = [
+            ["Erik", "Palencik", "21"],
+            ["Peter", "Maly", "45"],
+            ["Lukas", "Treti", "33"]
+            ]
 
+        for i in items:
+            tr = et.SubElement(tbody, "tr", {})
 
-
+            for j in i:
+                et.SubElement(tr, "td", {}).text = j
