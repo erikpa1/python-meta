@@ -4,6 +4,15 @@ class Application():
     pass
 
 
+class Skins:
+    dark = "dark"
+    white = "white"
+
+class FontSkin:
+    dark = "dark"
+    white = "white"
+
+
 class Element():
 
     def __init__(self):

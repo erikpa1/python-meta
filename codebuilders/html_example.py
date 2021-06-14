@@ -1,6 +1,6 @@
-from meta.codebuilders.html_constants import *
-from meta.codebuilders.html import *
-from meta.codebuilders.html_bootstrap import *
+from codebuilders.html_constants import *
+from codebuilders.html import *
+from codebuilders.html_bootstrap import *
 
 
 tmp = HtmlDocument()

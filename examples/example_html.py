@@ -1,7 +1,7 @@
 
-from meta.logging import *
-from meta.codebuilders.html import HtmlDocument
-from meta.codebuilders.html_bootstrap import *
+from logging import *
+from codebuilders.html import HtmlDocument
+from codebuilders.html_bootstrap import *
 
 import webbrowser
 import os
@@ -21,8 +21,8 @@ navBar.AddNavItem(NavDropDownItem("Editors", ["Some editor", "Another editor"]))
 
 container: Container = document.body.AddNode(Container())
 container.topPadding = 5
-container.skin = "dark"
-container.fontSkin = "white"
+container.skin = Skins.dark
+container.fontSkin = FontSkin.white
 container.AddItem(Header3("Dadada"))
 container.AddItem(Header2("Dadada"))
 container.AddItem(Header1("Dadada"))

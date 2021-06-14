@@ -1,8 +1,8 @@
 import xml.etree.ElementTree as et
 from xml.dom import minidom
 
-from meta.codebuilders.mxml import *
-from meta.codebuilders.html_constants import *
+
+from codebuilders.html_constants import *
 
 
 

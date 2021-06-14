@@ -1,7 +1,18 @@
 import xml.etree.ElementTree as et
 
-from meta.logging import *
-from meta import gui_arch
+from logging import *
+
+import gui_arch
+
+
+class Skins(gui_arch.Skins):
+    dark = "dark"
+    white = "white"
+
+
+class FontSkin(gui_arch.FontSkin):
+    dark = "dark"
+    white = "white"
 
 
 class NavItem(gui_arch.NavItem):
