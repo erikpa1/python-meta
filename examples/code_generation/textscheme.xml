@@ -1,0 +1,27 @@
+<mypackage>
+    <class>
+        <variables>
+            <variable name="myvariableA" type="string" value=""/>
+            <variable name="myvariableB" type="float" value="10.0"/>
+            <variable name="myvariableA" type="int" value="10"/>
+        </variables>
+
+        <setters>
+
+        </setters>
+
+        <getters>
+
+        </getters>
+
+        <serializators>
+
+        </serializators>
+
+        <deserializators>
+
+        </deserializators>
+
+    </class>
+
+</mypackage>
